@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Word Guess</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/style.css">
+</head>
+<body>
+    <div class="main">
+        <div class="row">
+                <div class="container" id="header">
+                        <img src="assets/fishing-theme-he1.jpg">
+                            <h1>Freshwater Fishing Tournament</h1>
+                            <p>Guess the name of the fish below!</p>
+                </div>
+               
+                <div class="container" id="fish">
+                        <img id = "fishImage" alt="bass">
+                </div>
+                <div class="container">
+                    <div class="word"></div>
+                </div>
+                <div class="container">
+                    <p>Incorrect Guesses:</p>
+                    <div>
+                        <div class="guess"></div>
+                    </div>
+                    <p>Guesses Remaining:</p>
+                    <div>
+                        <div class="left"></div>
+                    </div>
+                </div>
+                <div class="container">
+                    <p>Won Rounds:</p>
+                    <div>
+                        <div class="win"></div>
+                    </div>
+                </div>
+        </div>
+            
+    </div>
+    
+    <div class="footer">
+            <p>Andrew Kelly</p>
+    </div>
+    
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript">
+    var bass = {
+        name: 'bass',
+        image: 'assets/bass.png'
+    };
+    var trout = {
+        name: 'trout',
+        image: 'assets/trout.webp'
+    }
+    var crappie = {
+        name: 'crappie',
+        image: 'assets/Crappie.jpg'
+    }
+    var catfish = {
+        name: 'catfish',
+        image: 'assets/catfish.jpg'
+    }
+    var pike = {
+        name: 'pike',
+        image: 'assets/pike.jpg'
+    }
+    var fishArray = [bass, trout, crappie, catfish, pike];
+    var currentFish = {};
+    var guess = '';
+    var tries = 4;
+    function getRandomFish() {
+        var randomFish = fishArray[Math.floor(Math.random() * 5)];
+        $('#fishImage').attr('src',randomFish.image);
+
+
+        var hiddenWord = '';
+        for(var i = 0; i < randomFish.name.length; i++) {
+            hiddenWord += '_';
+        }
+        $('.word').text(hiddenWord);
+
+        currentFish = randomFish;
+        tries = 4;
+    }
+
+    var roundsWon = 0;
+
+    $(document).ready(function() {
+        getRandomFish();
+        var added = false;
+        tries = 4;
+        $('.left').text(tries);
+
+        document.onkeyup = function(e) {
+
+            var fish = currentFish.name;
+            var guessWord = $('.word').text();
+            var hiddenWord = '';
+
+            //continue
+            for( var i = 0; i < fish.length; i++) {
+                if(e.key.toLowerCase() === fish.charAt(i)) {
+                    hiddenWord += e.key.toLowerCase();
+                    added = true;
+                }
+                else if (guessWord.charAt(i) !== '_') {
+                    hiddenWord += fish.charAt(i);
+                }
+                else {
+                    hiddenWord += '_';
+                }
+            }
+
+            if(!added && (e.key >= 'a' && e.key <= 'z')) {
+                guess += e.key.toLowerCase();
+                tries--;
+                $('.left').text(tries);
+            }
+           
+            added = false; //reset added
+            $('.word').text(hiddenWord);
+            $('.guess').text(guess);
+
+            //you won
+            if ($('.word').text() === currentFish.name) {
+                roundsWon++;
+                $('.win').text(roundsWon);
+                $('.guess').text('');
+                guess = '';
+                getRandomFish();
+            }
+            else if ($('.guess').text().length > 3){
+                $('.win').text(roundsWon);
+                $('.guess').text('');
+                guess = '';
+                tries = 4;
+                $('.left').text(tries);
+                getRandomFish();
+            }
+        }
+
+    });
+
+</script>
+</html>
